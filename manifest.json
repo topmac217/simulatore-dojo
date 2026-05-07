@@ -7,7 +7,7 @@
   "theme_color": "#004d40",
   "icons": [
     {
-      "src": "logo-dojo.png?v=2",
+      "src": "logo-dojo-v3.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
