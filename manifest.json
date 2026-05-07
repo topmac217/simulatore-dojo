@@ -1,15 +1,16 @@
 {
-  "name": "Dojo Business Simulator",
-  "short_name": "Dojo App",
-  "start_url": "index.html",
+  "name": "Dojo Business",
+  "short_name": "Dojo",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#004d40",
-  "theme_color": "#121212",
+  "theme_color": "#004d40",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/5968/5968279.json",
+      "src": "https://cdn-icons-png.flaticon.com/512/3135/3135706.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
