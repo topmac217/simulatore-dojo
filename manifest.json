@@ -1,7 +1,7 @@
 {
   "name": "Dojo Business",
   "short_name": "Dojo",
-  "start_url": "./index.html",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#004d40",
   "theme_color": "#004d40",
