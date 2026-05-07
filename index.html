@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOJO | Simulatore Business</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        :root {
+            --dojo-green: #004d40;
+            --dojo-black: #121212;
+            --dojo-white: #ffffff;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Roboto, sans-serif; 
+            background-color: var(--dojo-green); 
+            padding: 20px; 
+            color: var(--dojo-white); 
+            margin: 0;
+        }
+
+        #pdf-content {
+            max-width: 850px; 
+            margin: 20px auto; 
+            background: var(--dojo-white); 
+            padding: 35px; 
+            border-radius: 20px; 
+            color: var(--dojo-black);
+        }
+
+        h2 { text-transform: uppercase; letter-spacing: 1.5px; color: var(--dojo-black); text-align: center; margin-bottom: 30px; font-weight: 800; }
+        h3 { color: var(--dojo-green); margin-top: 30px; font-size: 1em; text-transform: uppercase; border-bottom: 2px solid #eee; padding-bottom: 8px; }
+        
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        label { display: block; margin-top: 15px; font-weight: 600; font-size: 0.85em; color: #555; }
+        
+        input { 
+            width: 100%; padding: 12px; margin-top: 5px; border: 2px solid #eee; border-radius: 10px; 
+            box-sizing: border-box; font-size: 1em; background-color: #f9f9f9; color: var(--dojo-black);
+        }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 0.85em; }
+        th { color: var(--dojo-green); font-weight: bold; text-transform: uppercase; font-size: 0.7em; }
+
+        .result-box { 
+            background: var(--dojo-black); padding: 30px; border-radius: 15px; margin-top: 35px; 
+            color: var(--dojo-white); display: none; 
+        }
+
+        .savings-highlight { font-size: 2.4em; color: #4ade80; font-weight: 800; margin: 10px 0; }
+        
+        .no-print { max-width: 850px; margin: auto; display: flex; gap: 15px; }
+
+        button { 
+            flex: 1; background: var(--dojo-black); color: var(--dojo-white); padding: 20px; border: none; 
+            border-radius: 12px; font-size: 1.1em; font-weight: bold; text-transform: uppercase;
+            cursor: pointer; margin-top: 10px; transition: all 0.3s; border: 2px solid var(--dojo-black);
+        }
+
+        button.pdf-btn { background: var(--dojo-white); color: var(--dojo-black); border: 2px solid var(--dojo-black); }
+        button:hover { opacity: 0.8; transform: scale(1.01); }
+
+        .extra-fee-label { font-size: 0.75em; color: #666; display: block; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+<div id="pdf-content">
+    <h2>DOJO BUSINESS</h2>
+
+    <div class="section">
+        <h3>Dati Cliente</h3>
+        <label>Ragione Sociale</label>
+        <input type="text" id="ragioneSociale" placeholder="Nome Azienda">
+        <label>Indirizzo</label>
+        <input type="text" id="indirizzo" placeholder="Via, Città, CAP">
+        <div class="grid-inputs">
+            <div><label>Cellulare</label><input type="tel" id="cellulare"></div>
+            <div><label>Email</label><input type="email" id="email"></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>Situazione Attuale</h3>
+        <div class="grid-inputs">
+            <div><label>Transato Mensile (€)</label><input type="number" id="transatoAttuale" oninput="calcolaRealeAttuale()"></div>
+            <div><label>Commissioni Pagate (€)</label><input type="number" id="costoAttuale" oninput="calcolaRealeAttuale()"></div>
+        </div>
+        <p style="font-size: 0.9em; margin-top: 10px;">Tasso reale attuale: <strong><span id="percRealeAttuale">0</span>%</strong></p>
+    </div>
+
+    <div class="section">
+        <h3>Proposta DOJO (Valori Predefiniti)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Tipologia Carta</th>
+                    <th>Transato (€)</th>
+                    <th>%</th>
+                    <th>Fisso (€)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>PagoBancomat</td><td><input type="number" class="transato" id="t_pagoban" value="0"></td><td><input type="number" id="p_pagoban" value="0.50"></td><td>-</td></tr>
+                <tr><td>Debito Domestico</td><td><input type="number" class="transato" id="t_debdom" value="0"></td><td><input type="number" id="p_debdom" value="1.00"></td><td>-</td></tr>
+                <tr><td>Credito Domestico</td><td><input type="number" class="transato" id="t_credom" value="0"></td><td><input type="number" id="p_credom" value="1.00"></td><td>-</td></tr>
+                <tr><td>Carte EU (Magg.)</td><td><input type="number" class="transato" id="t_eu" value="0"></td><td><input type="number" id="p_eu" value="0.13"></td><td>-</td></tr>
+                <tr><td>Carte Commerciali</td><td><input type="number" class="transato" id="t_comm" value="0"></td><td><input type="number" id="p_comm" value="2.20"></td><td>-</td></tr>
+                <tr>
+                    <td>Carte Extra-EU (Magg.)</td>
+                    <td><input type="number" class="transato" id="t_extra" value="0"></td>
+                    <td><input type="number" id="p_extra" value="1.50"></td>
+                    <td><input type="number" id="f_extra" value="0.13" step="0.01"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="result-box" id="risultato">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: center;">
+            <div style="border-right: 1px solid #444;">
+                <p style="color:#aaa; font-size: 0.8em;">ATTUALE</p>
+                <p style="font-size: 1.5em; margin: 10px 0;">€ <span id="resAttuale">0</span></p>
+            </div>
+            <div>
+                <p style="color:#aaa; font-size: 0.8em;">CON DOJO</p>
+                <p style="font-size: 1.5em; margin: 10px 0; color: #4ade80;">€ <span id="resNuovo">0</span></p>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #444;">
+            <p style="margin: 0; text-transform: uppercase; font-size: 0.8em; color: #aaa;">Risparmio Annuo Stimato</p>
+            <div class="savings-highlight" id="resRisparmioAnno">0€</div>
+        </div>
+    </div>
+</div>
+
+<div class="no-print">
+    <button onclick="generaConfronto()">1. Calcola Risparmio</button>
+    <button class="pdf-btn" onclick="salvaPDF()">2. Salva PDF</button>
+</div>
+
+<script>
+function calcolaRealeAttuale() {
+    let t = parseFloat(document.getElementById('transatoAttuale').value) || 0;
+    let c = parseFloat(document.getElementById('costoAttuale').value) || 0;
+    document.getElementById('percRealeAttuale').innerText = (t > 0) ? (c / t * 100).toFixed(2) : "0";
+}
+
+function generaConfronto() {
+    let costoAttuale = parseFloat(document.getElementById('costoAttuale').value) || 0;
+    
+    // Valori Percentuali
+    let p_pagoban = parseFloat(document.getElementById('p_pagoban').value) || 0;
+    let p_debdom = parseFloat(document.getElementById('p_debdom').value) || 0;
+    let p_credom = parseFloat(document.getElementById('p_credom').value) || 0;
+    let m_eu = parseFloat(document.getElementById('p_eu').value) || 0;
+    let p_comm = parseFloat(document.getElementById('p_comm').value) || 0;
+    let m_extra = parseFloat(document.getElementById('p_extra').value) || 0;
+    let f_extra = parseFloat(document.getElementById('f_extra').value) || 0;
+
+    // Transati
+    let t_pagoban = parseFloat(document.getElementById('t_pagoban').value) || 0;
+    let t_debdom = parseFloat(document.getElementById('t_debdom').value) || 0;
+    let t_credom = parseFloat(document.getElementById('t_credom').value) || 0;
+    let t_eu = parseFloat(document.getElementById('t_eu').value) || 0;
+    let t_comm = parseFloat(document.getElementById('t_comm').value) || 0;
+    let t_extra = parseFloat(document.getElementById('t_extra').value) || 0;
+
+    let costoDojo = 0;
+    costoDojo += (t_pagoban * p_pagoban) / 100;
+    costoDojo += (t_debdom * p_debdom) / 100;
+    costoDojo += (t_credom * p_credom) / 100;
+    costoDojo += (t_eu * (p_credom + m_eu)) / 100; // Base Credito + Magg. EU
+    costoDojo += (t_comm * p_comm) / 100;
+    
+    // Calcolo Extra-EU: (Transato * (Base Credito + Maggiorazione %)) / 100 + Fisso
+    // Nota: Il fisso di solito si applica per ogni transazione. Qui lo simuliamo sul totale.
+    // Se vuoi applicarlo a transazione dovresti chiedere il numero di transazioni.
+    // Per ora lo aggiungiamo come costo secco sulla riga se c'è transato.
+    costoDojo += (t_extra * (p_credom + m_extra)) / 100;
+    if(t_extra > 0) costoDojo += f_extra; 
+
+    document.getElementById('resAttuale').innerText = costoAttuale.toFixed(2);
+    document.getElementById('resNuovo').innerText = costoDojo.toFixed(2);
+    let risparmioMese = costoAttuale - costoDojo;
+    document.getElementById('resRisparmioAnno').innerText = (risparmioMese * 12).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " €";
+    
+    document.getElementById('risultato').style.display = 'block';
+}
+
+function salvaPDF() {
+    const element = document.getElementById('pdf-content');
+    const cliente = document.getElementById('ragioneSociale').value || 'Cliente';
+    const opzioni = {
+        margin: 10,
+        filename: `Dojo_Preventivo_${cliente}.pdf`,
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opzioni).from(element).save();
+}
+</script>
+
+</body>
+</html>
