@@ -1,4 +1,7 @@
-self.addEventListener('fetch', function(event) {
-  // Questo codice serve solo a far capire ad Android che è una vera app
-  event.respondWith(fetch(event.request));
+self.addEventListener('install', (e) => {
+  self.skipWaiting();
+});
+
+self.addEventListener('fetch', (e) => {
+  e.respondWith(fetch(e.request));
 });
