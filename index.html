@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>DOJO Simulator</title>
-<link rel="shortcut icon" href="logo-dojo-v3.png?v=99">
-<link rel="apple-touch-icon" href="logo-dojo-v3.png?v=99">
-<link rel="icon" type="image/png" href="logo-dojo-v3.png?v=99">
+    <title>DOJO Simulator</title>
+    <link rel="shortcut icon" href="logo-dojo-v3.png?v=99">
+    <link rel="apple-touch-icon" href="logo-dojo-v3.png?v=99">
+    <link rel="icon" type="image/png" href="logo-dojo-v3.png?v=99">
     <link rel="manifest" href="manifest.json?v=500">
-<meta name="mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
@@ -46,6 +46,14 @@
             box-sizing: border-box; font-size: 1em; background-color: #f9f9f9; color: var(--dojo-black);
         }
 
+        /* Stile per i campi bloccati */
+        input[readonly] {
+            background-color: #f0f0f0;
+            color: #999;
+            cursor: not-allowed;
+            border: 1px dashed #ccc;
+        }
+
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 0.85em; }
         th { color: var(--dojo-green); font-weight: bold; text-transform: uppercase; font-size: 0.7em; }
@@ -67,8 +75,6 @@
 
         button.pdf-btn { background: var(--dojo-white); color: var(--dojo-black); border: 2px solid var(--dojo-black); }
         button:hover { opacity: 0.8; transform: scale(1.01); }
-
-        .extra-fee-label { font-size: 0.75em; color: #666; display: block; margin-top: 5px; }
     </style>
 </head>
 <body>
@@ -120,6 +126,18 @@
                     <td><input type="number" id="p_extra" value="1.50"></td>
                     <td><input type="number" id="f_extra" value="0.13" step="0.01"></td>
                 </tr>
+                <tr>
+                    <td>Discover Diners Club</td>
+                    <td><input type="number" class="transato" id="t_discover" value="0"></td>
+                    <td><input type="number" id="p_discover" value="1.99" readonly></td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>American Express</td>
+                    <td><input type="number" class="transato" id="t_amex" value="0"></td>
+                    <td><input type="number" id="p_amex" value="1.90" readonly></td>
+                    <td>-</td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -127,11 +145,11 @@
     <div class="result-box" id="risultato">
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: center;">
             <div style="border-right: 1px solid #444;">
-                <p style="color:#aaa; font-size: 0.8em;">ATTUALE</p>
+                <p style="color:#aaa; font-size: 0.8em;">ATTUALE (MESE)</p>
                 <p style="font-size: 1.5em; margin: 10px 0;">€ <span id="resAttuale">0</span></p>
             </div>
             <div>
-                <p style="color:#aaa; font-size: 0.8em;">CON DOJO</p>
+                <p style="color:#aaa; font-size: 0.8em;">CON DOJO (MESE)</p>
                 <p style="font-size: 1.5em; margin: 10px 0; color: #4ade80;">€ <span id="resNuovo">0</span></p>
             </div>
         </div>
@@ -142,9 +160,12 @@
     </div>
 </div>
 
-<div class="no-print">
+<div class="no-print" style="margin-top: 20px;">
     <button onclick="generaConfronto()">1. Calcola Risparmio</button>
     <button class="pdf-btn" onclick="salvaPDF()">2. Salva PDF</button>
+    <button class="link-btn" onclick="window.open('https://hub.paymentsense.com/', '_blank')" style="background: var(--dojo-green); border-color: var(--dojo-green);">
+        3. Inizia Preventivo
+    </button>
 </div>
 
 <script>
@@ -165,6 +186,10 @@ function generaConfronto() {
     let p_comm = parseFloat(document.getElementById('p_comm').value) || 0;
     let m_extra = parseFloat(document.getElementById('p_extra').value) || 0;
     let f_extra = parseFloat(document.getElementById('f_extra').value) || 0;
+    
+    // Percentuali fisse nuove carte
+    let p_discover = 1.99;
+    let p_amex = 1.90;
 
     // Transati
     let t_pagoban = parseFloat(document.getElementById('t_pagoban').value) || 0;
@@ -173,20 +198,23 @@ function generaConfronto() {
     let t_eu = parseFloat(document.getElementById('t_eu').value) || 0;
     let t_comm = parseFloat(document.getElementById('t_comm').value) || 0;
     let t_extra = parseFloat(document.getElementById('t_extra').value) || 0;
+    let t_discover = parseFloat(document.getElementById('t_discover').value) || 0;
+    let t_amex = parseFloat(document.getElementById('t_amex').value) || 0;
 
     let costoDojo = 0;
     costoDojo += (t_pagoban * p_pagoban) / 100;
     costoDojo += (t_debdom * p_debdom) / 100;
     costoDojo += (t_credom * p_credom) / 100;
-    costoDojo += (t_eu * (p_credom + m_eu)) / 100; // Base Credito + Magg. EU
+    costoDojo += (t_eu * (p_credom + m_eu)) / 100;
     costoDojo += (t_comm * p_comm) / 100;
     
-    // Calcolo Extra-EU: (Transato * (Base Credito + Maggiorazione %)) / 100 + Fisso
-    // Nota: Il fisso di solito si applica per ogni transazione. Qui lo simuliamo sul totale.
-    // Se vuoi applicarlo a transazione dovresti chiedere il numero di transazioni.
-    // Per ora lo aggiungiamo come costo secco sulla riga se c'è transato.
+    // Extra-EU
     costoDojo += (t_extra * (p_credom + m_extra)) / 100;
     if(t_extra > 0) costoDojo += f_extra; 
+
+    // Nuove Carte
+    costoDojo += (t_discover * p_discover) / 100;
+    costoDojo += (t_amex * p_amex) / 100;
 
     document.getElementById('resAttuale').innerText = costoAttuale.toFixed(2);
     document.getElementById('resNuovo').innerText = costoDojo.toFixed(2);
@@ -208,11 +236,5 @@ function salvaPDF() {
     html2pdf().set(opzioni).from(element).save();
 }
 </script>
-
 </body>
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js');
-  }
-</script>
 </html>
