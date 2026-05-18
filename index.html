@@ -4,15 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DOJO Simulator</title>
-<link rel="shortcut icon" href="logo-dojo-vfinal.png?v=999">
-<link rel="apple-touch-icon" href="logo-dojo-vfinal.png?v=999">
-<link rel="icon" type="image/png" href="logo-dojo-vfinal.png?v=999">
+    <link rel="shortcut icon" href="logo-dojo-vfinal.png?v=999">
+    <link rel="apple-touch-icon" href="logo-dojo-vfinal.png?v=999">
+    <link rel="icon" type="image/png" href="logo-dojo-vfinal.png?v=999">
     <link rel="manifest" href="manifest.json?v=500">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="logo-dojo-vfinal.png?v=1000">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="logo-dojo-vfinal.png?v=1000">
     
     <style>
         :root {
@@ -78,6 +77,31 @@
 
         button.pdf-btn { background: var(--dojo-white); color: var(--dojo-black); border: 2px solid var(--dojo-black); }
         button:hover { opacity: 0.8; transform: scale(1.01); }
+
+        /* REGOLA PER LA STAMPA / SALVATAGGIO PDF */
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+                padding: 0;
+                margin: 0;
+            }
+            #pdf-content {
+                max-width: 100% !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+            }
+            .no-print {
+                display: none !important; 
+            }
+            input {
+                background: transparent !important;
+                border: 1px solid #ccc !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -118,11 +142,36 @@
                 </tr>
             </thead>
             <tbody>
-                <tr><td>PagoBancomat</td><td><input type="number" class="transato" id="t_pagoban" value="0"></td><td><input type="number" id="p_pagoban" value="0.50"></td><td>-</td></tr>
-                <tr><td>Debito Domestico</td><td><input type="number" class="transato" id="t_debdom" value="0"></td><td><input type="number" id="p_debdom" value="1.00"></td><td>-</td></tr>
-                <tr><td>Credito Domestico</td><td><input type="number" class="transato" id="t_credom" value="0"></td><td><input type="number" id="p_credom" value="1.00"></td><td>-</td></tr>
-                <tr><td>Carte EU (Magg.)</td><td><input type="number" class="transato" id="t_eu" value="0"></td><td><input type="number" id="p_eu" value="0.30"></td><td>-</td></tr>
-                <tr><td>Carte Commerciali</td><td><input type="number" class="transato" id="t_comm" value="0"></td><td><input type="number" id="p_comm" value="2.20"></td><td>-</td></tr>
+                <tr>
+                    <td>PagoBancomat</td>
+                    <td><input type="number" class="transato" id="t_pagoban" value="0"></td>
+                    <td><input type="number" id="p_pagoban" value="0.50"></td>
+                    <td><input type="number" id="f_pagoban" value="0.00" step="0.01"></td>
+                </tr>
+                <tr>
+                    <td>Debito Domestico</td>
+                    <td><input type="number" class="transato" id="t_debdom" value="0"></td>
+                    <td><input type="number" id="p_debdom" value="1.00"></td>
+                    <td><input type="number" id="f_debdom" value="0.00" step="0.01"></td>
+                </tr>
+                <tr>
+                    <td>Credito Domestico</td>
+                    <td><input type="number" class="transato" id="t_credom" value="0"></td>
+                    <td><input type="number" id="p_credom" value="1.00"></td>
+                    <td><input type="number" id="f_credom" value="0.00" step="0.01"></td>
+                </tr>
+                <tr>
+                    <td>Carte EU (Magg.)</td>
+                    <td><input type="number" class="transato" id="t_eu" value="0"></td>
+                    <td><input type="number" id="p_eu" value="0.30"></td>
+                    <td><input type="number" id="f_eu" value="0.00" step="0.01"></td>
+                </tr>
+                <tr>
+                    <td>Carte Commerciali</td>
+                    <td><input type="number" class="transato" id="t_comm" value="0"></td>
+                    <td><input type="number" id="p_comm" value="2.20"></td>
+                    <td><input type="number" id="f_comm" value="0.00" step="0.01"></td>
+                </tr>
                 <tr>
                     <td>Carte Extra-EU (Magg.)</td>
                     <td><input type="number" class="transato" id="t_extra" value="0"></td>
@@ -133,13 +182,13 @@
                     <td>Discover Diners Club</td>
                     <td><input type="number" class="transato" id="t_discover" value="0"></td>
                     <td><input type="number" id="p_discover" value="1.99" readonly></td>
-                    <td>-</td>
+                    <td><input type="number" id="f_discover" value="0.00" readonly></td>
                 </tr>
                 <tr>
                     <td>American Express</td>
                     <td><input type="number" class="transato" id="t_amex" value="0"></td>
                     <td><input type="number" id="p_amex" value="1.90" readonly></td>
-                    <td>-</td>
+                    <td><input type="number" id="f_amex" value="0.00" readonly></td>
                 </tr>
             </tbody>
         </table>
@@ -191,11 +240,18 @@ function generaConfronto() {
     let m_eu = parseFloat(document.getElementById('p_eu').value) || 0;
     let p_comm = parseFloat(document.getElementById('p_comm').value) || 0;
     let m_extra = parseFloat(document.getElementById('p_extra').value) || 0;
-    let f_extra = parseFloat(document.getElementById('f_extra').value) || 0;
-    
-    // Percentuali fisse nuove carte
     let p_discover = 1.99;
     let p_amex = 1.90;
+
+    // Valori Costi Fissi
+    let f_pagoban = parseFloat(document.getElementById('f_pagoban').value) || 0;
+    let f_debdom = parseFloat(document.getElementById('f_debdom').value) || 0;
+    let f_credom = parseFloat(document.getElementById('f_credom').value) || 0;
+    let f_eu = parseFloat(document.getElementById('f_eu').value) || 0;
+    let f_comm = parseFloat(document.getElementById('f_comm').value) || 0;
+    let f_extra = parseFloat(document.getElementById('f_extra').value) || 0;
+    let f_discover = parseFloat(document.getElementById('f_discover').value) || 0;
+    let f_amex = parseFloat(document.getElementById('f_amex').value) || 0;
 
     // Transati
     let t_pagoban = parseFloat(document.getElementById('t_pagoban').value) || 0;
@@ -208,19 +264,38 @@ function generaConfronto() {
     let t_amex = parseFloat(document.getElementById('t_amex').value) || 0;
 
     let costoDojo = 0;
-    costoDojo += (t_pagoban * p_pagoban) / 100;
-    costoDojo += (t_debdom * p_debdom) / 100;
-    costoDojo += (t_credom * p_credom) / 100;
-    costoDojo += (t_eu * (p_credom + m_eu)) / 100;
-    costoDojo += (t_comm * p_comm) / 100;
     
-    // Extra-EU
+    // Calcolo PagoBancomat
+    costoDojo += (t_pagoban * p_pagoban) / 100;
+    if(t_pagoban > 0) costoDojo += f_pagoban;
+
+    // Calcolo Debito Domestico
+    costoDojo += (t_debdom * p_debdom) / 100;
+    if(t_debdom > 0) costoDojo += f_debdom;
+
+    // Calcolo Credito Domestico
+    costoDojo += (t_credom * p_credom) / 100;
+    if(t_credom > 0) costoDojo += f_credom;
+
+    // Calcolo Carte EU
+    costoDojo += (t_eu * (p_credom + m_eu)) / 100;
+    if(t_eu > 0) costoDojo += f_eu;
+
+    // Calcolo Carte Commerciali
+    costoDojo += (t_comm * p_comm) / 100;
+    if(t_comm > 0) costoDojo += f_comm;
+    
+    // Calcolo Extra-EU
     costoDojo += (t_extra * (p_credom + m_extra)) / 100;
     if(t_extra > 0) costoDojo += f_extra; 
 
-    // Nuove Carte
+    // Calcolo Discover Diners Club
     costoDojo += (t_discover * p_discover) / 100;
+    if(t_discover > 0) costoDojo += f_discover;
+
+    // Calcolo American Express
     costoDojo += (t_amex * p_amex) / 100;
+    if(t_amex > 0) costoDojo += f_amex;
 
     document.getElementById('resAttuale').innerText = costoAttuale.toFixed(2);
     document.getElementById('resNuovo').innerText = costoDojo.toFixed(2);
@@ -231,15 +306,11 @@ function generaConfronto() {
 }
 
 function salvaPDF() {
-    const element = document.getElementById('pdf-content');
     const cliente = document.getElementById('ragioneSociale').value || 'Cliente';
-    const opzioni = {
-        margin: 10,
-        filename: `Dojo_Preventivo_${cliente}.pdf`,
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-    html2pdf().set(opzioni).from(element).save();
+    const titoloOriginale = document.title;
+    document.title = `Dojo_Preventivo_${cliente}`;
+    window.print();
+    document.title = titoloOriginale;
 }
 </script>
 </body>
