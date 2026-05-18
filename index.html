@@ -23,29 +23,31 @@
         body { 
             font-family: 'Segoe UI', Roboto, sans-serif; 
             background-color: var(--dojo-green); 
-            padding: 20px; 
+            padding: 15px; 
             color: var(--dojo-white); 
             margin: 0;
         }
 
         #pdf-content {
             max-width: 850px; 
-            margin: 20px auto; 
+            margin: 10px auto; 
             background: var(--dojo-white); 
-            padding: 35px; 
+            padding: 25px; 
             border-radius: 20px; 
             color: var(--dojo-black);
+            box-sizing: border-box;
         }
 
-        h2 { text-transform: uppercase; letter-spacing: 1.5px; color: var(--dojo-black); text-align: center; margin-bottom: 30px; font-weight: 800; }
-        h3 { color: var(--dojo-green); margin-top: 30px; font-size: 1em; text-transform: uppercase; border-bottom: 2px solid #eee; padding-bottom: 8px; }
+        h2 { text-transform: uppercase; letter-spacing: 1.5px; color: var(--dojo-black); text-align: center; margin-bottom: 25px; font-weight: 800; font-size: 1.6em; }
+        h3 { color: var(--dojo-green); margin-top: 25px; font-size: 1.1em; text-transform: uppercase; border-bottom: 2px solid #eee; padding-bottom: 8px; }
         
-        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        label { display: block; margin-top: 15px; font-weight: 600; font-size: 0.85em; color: #555; }
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        label { display: block; margin-top: 12px; font-weight: 600; font-size: 0.85em; color: #555; }
         
         input { 
             width: 100%; padding: 12px; margin-top: 5px; border: 2px solid #eee; border-radius: 10px; 
             box-sizing: border-box; font-size: 1em; background-color: #f9f9f9; color: var(--dojo-black);
+            -webkit-appearance: none; /* Rimuove stili strani su iOS */
         }
 
         /* Stile per i campi bloccati */
@@ -56,51 +58,92 @@
             border: 1px dashed #ccc;
         }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 0.85em; }
-        th { color: var(--dojo-green); font-weight: bold; text-transform: uppercase; font-size: 0.7em; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; table-layout: fixed; }
+        th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid #eee; font-size: 0.9em; }
+        th { color: var(--dojo-green); font-weight: bold; text-transform: uppercase; font-size: 0.75em; }
+        
+        /* Larghezze colonne su PC */
+        th:nth-child(1), td:nth-child(1) { width: 35%; }
+        th:nth-child(2), td:nth-child(2) { width: 25%; }
+        th:nth-child(3), td:nth-child(3) { width: 20%; }
+        th:nth-child(4), td:nth-child(4) { width: 20%; }
 
         .result-box { 
-            background: var(--dojo-black); padding: 30px; border-radius: 15px; margin-top: 35px; 
+            background: var(--dojo-black); padding: 25px; border-radius: 15px; margin-top: 30px; 
             color: var(--dojo-white); display: none; 
         }
 
-        .savings-highlight { font-size: 2.4em; color: #4ade80; font-weight: 800; margin: 10px 0; }
+        .savings-highlight { font-size: 2.2em; color: #4ade80; font-weight: 800; margin: 10px 0; }
         
-        .no-print { max-width: 850px; margin: auto; display: flex; gap: 15px; }
+        .no-print { max-width: 850px; margin: 15px auto; display: flex; flex-direction: column; gap: 10px; }
 
         button { 
-            flex: 1; background: var(--dojo-black); color: var(--dojo-white); padding: 20px; border: none; 
-            border-radius: 12px; font-size: 1.1em; font-weight: bold; text-transform: uppercase;
-            cursor: pointer; margin-top: 10px; transition: all 0.3s; border: 2px solid var(--dojo-black);
+            width: 100%; background: var(--dojo-black); color: var(--dojo-white); padding: 16px; border: none; 
+            border-radius: 12px; font-size: 1em; font-weight: bold; text-transform: uppercase;
+            cursor: pointer; transition: all 0.2s; border: 2px solid var(--dojo-black);
+            box-sizing: border-box;
         }
 
         button.pdf-btn { background: var(--dojo-white); color: var(--dojo-black); border: 2px solid var(--dojo-black); }
-        button:hover { opacity: 0.8; transform: scale(1.01); }
+        button:hover { opacity: 0.9; }
+
+        /* REGOLE DI OTTIMIZZAZIONE PER SMARTPHONE (VERTICALE) */
+        @media screen and (max-width: 600px) {
+            body { padding: 8px; }
+            #pdf-content { padding: 15px; border-radius: 12px; }
+            .grid-inputs { grid-template-columns: 1fr; gap: 5px; } /* Incolonna cellulare ed email */
+            
+            /* Trasformiamo la tabella in schede verticali leggibili */
+            table, thead, tbody, th, td, tr { display: block; width: 100% !important; box-sizing: border-box; }
+            thead { display: none; } /* Nascondiamo la testata della tabella vecchia */
+            
+            tr { 
+                background: #fcfcfc; 
+                border: 1px solid #e0e0e0; 
+                border-radius: 12px; 
+                margin-bottom: 15px; 
+                padding: 12px;
+            }
+            
+            td { 
+                border-bottom: none; 
+                padding: 6px 0; 
+                display: flex; 
+                align-items: center; 
+                justify-content: space-between;
+                font-size: 1em;
+            }
+            
+            /* Usiamo i selettori CSS per ricreare i nomi dei campi a sinistra su mobile */
+            td:nth-child(1) { font-weight: bold; color: var(--dojo-green); border-bottom: 2px solid #eee; padding-bottom: 8px; margin-bottom: 8px; font-size: 1.1em; }
+            td:nth-child(2)::before { content: "Transato:"; color: #666; font-size: 0.85em; font-weight: 600; }
+            td:nth-child(3)::before { content: "Comm. %:"; color: #666; font-size: 0.85em; font-weight: 600; }
+            td:nth-child(4)::before { content: "Fisso €:"; color: #666; font-size: 0.85em; font-weight: 600; }
+            
+            /* Sistemiamo la larghezza degli input dentro le schede mobile */
+            td input { width: 55% !important; margin-top: 0; padding: 8px; }
+            
+            .savings-highlight { font-size: 1.9em; }
+        }
+
+        /* Gestione layout bottoni paralleli su tablet/PC */
+        @media screen and (min-width: 601px) {
+            .no-print { flex-direction: row; }
+            button { margin-top: 10px; }
+        }
 
         /* REGOLA PER LA STAMPA / SALVATAGGIO PDF */
         @media print {
-            body {
-                background: white !important;
-                color: black !important;
-                padding: 0;
-                margin: 0;
-            }
-            #pdf-content {
-                max-width: 100% !important;
-                width: 100% !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                box-shadow: none !important;
-                border-radius: 0 !important;
-            }
-            .no-print {
-                display: none !important; 
-            }
-            input {
-                background: transparent !important;
-                border: 1px solid #ccc !important;
-            }
+            body { background: white !important; color: black !important; padding: 0; margin: 0; }
+            #pdf-content { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border-radius: 0 !important; }
+            table { display: table !important; table-layout: auto; }
+            thead { display: table-header-group !important; }
+            tbody { display: table-row-group !important; }
+            tr { display: table-row !important; background: transparent !important; border: none !important; padding: 0 !important; margin-bottom: 0 !important; }
+            td, th { display: table-cell !important; padding: 8px !important; border-bottom: 1px solid #eee !important; }
+            td::before { display: none !important; }
+            td input { width: 100% !important; background: transparent !important; border: 1px solid #ccc !important; padding: 6px !important; }
+            .no-print { display: none !important; }
         }
     </style>
 </head>
@@ -212,10 +255,9 @@
     </div>
 </div>
 
-<div class="no-print" style="margin-top: 20px;">
+<div class="no-print">
     <button onclick="generaConfronto()">1. Calcola Risparmio</button>
     <button class="pdf-btn" onclick="salvaPDF()">2. Salva PDF</button>
-    
     <button class="link-btn" 
             onclick="window.open('https://hub.paymentsense.com/landing', '_blank')" 
             style="background: var(--dojo-green); border: 2px solid var(--dojo-black); color: var(--dojo-white);">
